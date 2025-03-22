@@ -1,12 +1,6 @@
 .env
 .DS_Store
 Thumbs.db
-.coverage
-
-.pytest_cache/
-htmlcov/
-venv/
-__pycache__/
 
 
 .idea/
@@ -18,3 +12,5 @@ node_modules/
 *.pyd
 *.exe
 *.log
+*.sublime-project
+*.sublime-workspace

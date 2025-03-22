@@ -1,0 +1,7 @@
+.coverage
+.secret
+
+.pytest_cache/
+htmlcov/
+venv/
+__pycache__/

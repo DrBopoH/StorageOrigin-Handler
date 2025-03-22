@@ -1,0 +1,14 @@
+{
+    "id": 1,
+    "age": 17,
+    "username": "ivan",
+    "email": "ivan777@gmail.com",
+    "timecreated": "2024-03-22 12:00:00",
+    "posts": {
+        "my dog": {
+            "id": 197,
+            "content": "_vvv DOG vvv_",
+            "timecreated": "2025-01-05 19:45:00"
+        }
+    }
+}

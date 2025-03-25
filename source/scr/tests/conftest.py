@@ -1,7 +1,6 @@
 import pytest
 
-from ..utils.jsonpp import *
-from ..dbs.sqlpp import *
+from scr.utils.origin import *
 
 
 
@@ -15,3 +14,9 @@ def jsonorigin() -> JSONOrigin:
 @pytest.fixture
 def sqliteorigin() -> SQLiteOrigin:
 	return SQLiteOrigin()
+
+
+
+@pytest.fixture
+def fileorigin() -> FileOrigin:
+	return FileOrigin()

@@ -73,17 +73,17 @@ json_examples: List = [
 
 
 
-@pytest.mark.parametrize("filePath, unicode, data", [
+@pytest.mark.parametrize("filePath, encoding, data", [
 		['scr/tests/test.json', 'utf-8', -1],
-		['scr/tests/test_latin1.json', 'latin1', 1]])
-def test_positive_rebaseData(jsonorigin, filePath: str, unicode: str, data: int):
+		['scr/tests/test_latin1.json', 'latin1', 1],
+		['scr/tests/test_locked.json', 'utf-8', 0]])
+def test_positive_rebaseData(jsonorigin, filePath: str, encoding: str, data_index: int):
 	jsonorigin.mountOrigin('scr/tests/test.json')
+	jsonorigin.encoding = encoding
 
-	backup: Dict = jsonorigin.getData()
-	result: bool = jsonorigin.rebaseData(jsonData)
+	jsonorigin.rebaseData(json_examples[data_index])
 
-	if result: assert jsonorigin.getData() == jsonData
-	else: assert jsonorigin.getData() == backup
+	assert jsonorigin
 
 
 

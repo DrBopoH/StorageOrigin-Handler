@@ -1,8 +1,8 @@
 {
-    "id": 1,
+    "id":1,
     "age": 17,
-    "username": "ivan",
-    "email": "ivan777@gmail.com",
+    "username":"ivan",
+    "email":"ivan777@gmail.com",
     "timecreated": "2024-03-22 12:00:00",
     "posts": {
         "my dog": {

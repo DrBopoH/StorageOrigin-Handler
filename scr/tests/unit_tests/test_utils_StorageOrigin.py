@@ -18,7 +18,6 @@ unvalid_filepaths: List[List[str | Exception]] = [
 	['', OSError, "[Errno 2] No such file or directory: ''"],
 	['tests/' + 'very'*100 + 'longfile.txt', OSError, "[Errno 22] Invalid argument: '" + 'tests/' + 'very'*100 + 'longfile.txt' + "'"]
 ]
-#['scr/tests/test_lockedaccess.json', PermissionError, 'Access to file is locked'],
 
 
 
@@ -82,4 +81,29 @@ def test_negative_createOrigin(storageorigin, filePath: str, exception: Exceptio
 	assert assertion
 
 
-# if '*' in exc_out else exc_out
+@pytest.mark.parametrize("filePath", ['tests/test.txt', 'tests/note.md'])
+def test_positive_with(storageorigin, filePath: str):
+	storageorigin.createOrigin(filePath)
+
+	with storageorigin as file:
+		file._origin.seek(0)
+		file._origin.write('Hello world!')
+		file._origin.truncate()
+
+	assert storageorigin._origin is None
+
+	with storageorigin as file:
+		assert file._origin.read() == 'Hello world!'
+
+	if os.path.exists(filePath): os.remove(filePath)
+
+@pytest.mark.parametrize("filePath", ['tests/test.txt', 'tests/note.md'])
+def test_negative_with(storageorigin, filePath: str):
+	storageorigin.createOrigin(filePath)
+	if os.path.exists(filePath): os.remove(filePath)
+
+	with pytest.raises(FileNotFoundError, match=f'{storageorigin}: File on path <{filePath}> not exists!'):
+		with storageorigin as file:
+			file._origin.seek(0)
+			file._origin.write('Hello world!')
+			file._origin.truncate()

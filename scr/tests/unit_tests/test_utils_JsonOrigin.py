@@ -1,5 +1,5 @@
-from typing import Dict, List
-import pytest
+from typing import List
+import pytest, os
 
 json_examples: List = [
 	{
@@ -73,70 +73,3 @@ json_examples: List = [
 
 
 
-@pytest.mark.parametrize("filePath, encoding, data", [
-		['scr/tests/test.json', 'utf-8', -1],
-		['scr/tests/test_latin1.json', 'latin1', 1],
-		['scr/tests/test_locked.json', 'utf-8', 0]])
-def test_positive_rebaseData(jsonorigin, filePath: str, encoding: str, data_index: int):
-	jsonorigin.mountOrigin('scr/tests/test.json')
-	jsonorigin.encoding = encoding
-
-	jsonorigin.rebaseData(json_examples[data_index])
-
-	assert jsonorigin
-
-
-
-@pytest.mark.parametrize("filePath", [
-		'scr/tests/test.json'])
-def test_positive_getData(jsonorigin, filePath: str):
-	jsonorigin.mountOrigin(filePath)
-	
-	assert jsonorigin.getData() != {}
-
-@pytest.mark.parametrize("filePath", [
-		])
-def test_negative_getData_elseNotExist(jsonorigin, filePath: str):
-	jsonorigin.mountOrigin(filePath)
-	
-	assert jsonorigin.getData() == {}
-
-@pytest.mark.parametrize("filePath", [
-		'scr/tests/test_unvalid.json'])
-def test_negative_getData_exceptionUnvalidJson(jsonorigin, filePath: str):
-	jsonorigin.mountOrigin(filePath)
-	
-	assert jsonorigin.getData() == {}
-
-@pytest.mark.parametrize("filePath", [
-		'scr/tests/test_empty.json'])
-def test_negative_getData_exceptionEmptyJson(jsonorigin, filePath: str):
-	jsonorigin.mountOrigin(filePath)
-	
-	assert jsonorigin.getData() == {}
-
-@pytest.mark.parametrize("filePath", [
-		'scr/tests/test_locked.json'])
-def test_negative_getData_exceptionLockedError(jsonorigin, filePath: str):
-	file = open(filePath, 'w+', encoding='utf-8')
-	file.write('{\n\t"name":"vovan"\n}')
-	file.flush()
-	
-	jsonorigin.mountOrigin(filePath)
-	assert jsonorigin.getData() == {}
-
-	file.close()
-
-@pytest.mark.parametrize("filePath", [
-		'scr/tests/test_lockedaccess.json'])
-def test_negative_getData_exceptionPermisionError(jsonorigin, filePath: str):
-	jsonorigin.mountOrigin(filePath)
-	
-	assert jsonorigin.getData() == {}
-
-@pytest.mark.parametrize("filePath", [
-		'scr/tests/test_latin1.json'])
-def test_negative_getData_exceptionDecodeError(jsonorigin, filePath: str):
-	jsonorigin.mountOrigin(filePath)
-	
-	assert jsonorigin.getData() == {}

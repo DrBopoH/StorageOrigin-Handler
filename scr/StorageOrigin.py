@@ -1,5 +1,7 @@
+import copy
+from re import template
 from typing import Self, Dict, Any
-import sqlite3, json, os
+import sqlite3, copy, json, os
 
 
 
@@ -13,39 +15,8 @@ class StorageOrigin:
 	_origin = None
 
 
-	def open(self: Self):
-		if self.checkPathExists(): self._origin = open(self._filePath, 'r+', encoding=self.encoding)
-
-	def close(self: Self):
-		if self._origin is not None: self._origin = self._origin.close()
-
-
-
-	def __enter__(self: Self) -> Self:
-		self.open()
-		return self
-
-	def __exit__(self: Self):
-		self.close()
-
-
-
-	def checkPathExists(self: Self, filePath: str | None = None) -> bool:
-		'''
-
-		Checking for existence of a file on filePath.
-		If new path == None, checking now path(self._filePath).
-
-		Return (if path == EXISTS).
-		
-		'''
-		if filePath is None: filePath = self._filePath
-
-		if not os.path.exists(filePath): 
-			print(f'<{self}>: File on path <{filePath}> not exists.')
-			return False
-
-		return True
+	def __init__(self: Self, filePath: str | None = None):
+		if filePath: self.createOrigin(filePath)
 
 
 
@@ -56,6 +27,44 @@ class StorageOrigin:
 		if not self.checkPathExists(filePath): open(filePath, 'w').close()
 
 		self.mountOrigin(filePath)
+
+
+
+	def open(self: Self):
+		if self.checkPathExists(): self._origin = open(self._filePath, 'r+', encoding=self.encoding)
+		else: raise FileNotFoundError(f'{self}: File on path <{self._filePath}> not exists!')
+
+	def __enter__(self: Self) -> Self:
+		self.open()
+		return self
+
+
+	def close(self: Self):
+		if self._origin is not None: self._origin = self._origin.close()
+
+	def __exit__(self: Self, exc_type, exc_value, traceback):
+		self.close()
+
+
+
+	def checkPathExists(self: Self, filePath: str | None = None) -> bool:
+		'''
+		Checking for existence of a file on filePath.
+		If new path == None, checking self path (self._filePath).
+
+		Return (if path == EXISTS).
+		'''
+		if filePath is None: filePath = self._filePath
+
+		if os.path.exists(filePath): return True
+		
+		print(f'{self}: File on path <{filePath}> not exists.')
+		return False
+
+
+
+	def __str__(self) -> str:
+		return self._filePath
 
 
 
@@ -93,21 +102,29 @@ class JsonOrigin(StorageOrigin):
 
 
 
-	def replaceJson(self: Self, newData: Dict[str, Any]):
-		'''Overwriting JSON file with new data'''
-		tempFilePath: str = f"{self._filePath}.tmp"
+	def _dump(self: Self, filePath: str, newData: Dict[str, Any]):
+		with open(filePath, 'w', encoding=self.encoding) as tempFile: 
+			json.dump(newData, tempFile, indent=self.indentation, ensure_ascii=self.ensure_ascii)
 
-		try:
-			with open(tempFilePath, 'w', encoding=self.encoding) as tempFile: 
-				json.dump(newData, tempFile, indent=self.indentation, ensure_ascii=self.ensure_ascii)
+	def _savereplace(self: Self, newData: Dict[str, Any]):
+		tempFile = copy.copy(self)
+		tempFile.createOrigin(f'{self._filePath}.tmp')
+
+		try: 
+			with tempFile: tempFile.replaceJson(newData, False)
 
 		except (OSError, PermissionError, json.JSONDecodeError) as e:
 			raise RuntimeError(f"Error trying to save data in <{self._filePath}>, error as: {e}")
 
-		else: os.replace(tempFilePath, self._filePath)
+		else: os.replace(str(tempFile), self._filePath)
 		
 		finally: 
-			if os.path.exists(tempFilePath): os.remove(tempFilePath)
+			if os.path.exists(str(tempFile)): os.remove(str(tempFile))
+
+	def replaceJson(self: Self, newData: Dict[str, Any], savemode: bool = True):
+		'''Overwriting JSON file with new data'''
+		if savemode: self._savereplace(newData)
+		else: json.dump(newData, self._origin, indent=self.indentation, ensure_ascii=self.ensure_ascii)
 
 
 

@@ -1,75 +1,53 @@
-from typing import List
-import pytest, os
+from typing import Type, Dict 
+import pytest, json, os, re
 
-json_examples: List = [
-	{
-		"widget": {
-			"debug": "on",
-			"window": {
-				"title": "Sample Konfabulator Widget",
-				"name": "main_window",
-				"width": 500,
-				"height": 500
-			},
-			"image": { 
-				"src": "Images/Sun.png",
-				"name": "sun1",
-				"hOffset": 250,
-				"vOffset": 250,
-				"alignment": "center"
-			},
-			"text": {
-				"data": "Click Here",
-				"size": 36,
-				"style": "bold",
-				"name": "text1",
-				"hOffset": 250,
-				"vOffset": 100,
-				"alignment": "center",
-				"onMouseUp": "sun1.opacity = (sun1.opacity / 100) * 90;"
-			}
-		}
-	},
-	{
-		"menu": {
-			"header": "SVG Viewer",
-			"items": [
-				{"id": "Open"},
-				{"id": "OpenNew", "label": "Open New"},
-				{"id": "ZoomIn", "label": "Zoom In"},
-				{"id": "ZoomOut", "label": "Zoom Out"},
-				{"id": "OriginalView", "label": "Original View"},
-				{"id": "Quality"},
-				{"id": "Pause"},
-				{"id": "Mute"},
-				{"id": "Find", "label": "Find..."},
-				{"id": "FindAgain", "label": "Find Again"},
-				{"id": "Copy"},
-				{"id": "CopyAgain", "label": "Copy Again"},
-				{"id": "CopySVG", "label": "Copy SVG"},
-				{"id": "ViewSVG", "label": "View SVG"},
-				{"id": "ViewSource", "label": "View Source"},
-				{"id": "SaveAs", "label": "Save As"},
-				{"id": "Help"},
-				{"id": "About", "label": "About Adobe CVG Viewer..."}
-			]
-		}
-	},
-	{
-		"id":1,
-		"age": 17,
-		"username":"ivan",
-		"email":"ivan777@gmail.com",
-		"timecreated": "2024-03-22 12:00:00",
-		"posts": {
-			"my dog": {
-				"id": 197,
-				"content": "_vvv DOG vvv_",
-				"timecreated": "2025-01-05 19:45:00"
-			}
-		}
-	}
-]
+from scr.tests.conftest import EXISTS_FILEPATHS, JSON_EXAMPLES
+from scr.StorageOrigin import JsonOrigin
 
 
 
+@pytest.mark.parametrize("filePath", [EXISTS_FILEPATHS[0]])
+def test_positive_getJson(filePath: str):
+	with JsonOrigin(filePath) as jsonorigin:
+		assert jsonorigin.load() == JSON_EXAMPLES[-1]
+
+@pytest.mark.parametrize("filePath, exception, exc_out", [
+	[EXISTS_FILEPATHS[-1], json.decoder.JSONDecodeError, "Expecting property name enclosed in double quotes: line 1 column 18 (char 17)"],
+	[EXISTS_FILEPATHS[1], ValueError, f": Error trying to get data with <{EXISTS_FILEPATHS[1]}>, JSON file is empty"]
+])
+def test_negative_getJson(filePath: str, exception: Type[Exception], exc_out: str):
+	jsonorigin = JsonOrigin(filePath)
+
+	exc_out = f"{jsonorigin.__repr__()}"+exc_out if filePath == EXISTS_FILEPATHS[1] else exc_out
+
+	with pytest.raises(exception, match=re.escape(exc_out)):
+		with jsonorigin:
+			jsonorigin.load()
+
+
+@pytest.mark.parametrize("data", JSON_EXAMPLES)
+def test_positive_replaceJson(data: Dict):
+	jsonorigin = JsonOrigin(EXISTS_FILEPATHS[0])
+
+	with jsonorigin: jsonorigin.replace(data)
+
+	with jsonorigin:
+		assert jsonorigin.load() == data and not os.path.exists(f'{EXISTS_FILEPATHS[0]}.tmp')
+
+#@pytest.mark.parametrize("data", JSON_EXAMPLES)
+#def test_negative_replaceJson(data: Dict):
+#	jsonorigin = JsonOrigin(EXISTS_FILEPATHS[0])
+
+#	with pytest.raises(RuntimeError, match=f"{jsonorigin.__repr__()}: Error trying to save data in <{jsonorigin}>, error as: "):
+#		with jsonorigin: 
+#			jsonorigin.replaceJson(data)
+
+
+@pytest.mark.parametrize("data", JSON_EXAMPLES)
+def test_notsafe_replaceJson(data: Dict):
+	jsonorigin = JsonOrigin(EXISTS_FILEPATHS[0])
+
+	with jsonorigin: jsonorigin.replace(data, False)
+
+	with jsonorigin:
+		assert jsonorigin.load() == data and not os.path.exists(f'{EXISTS_FILEPATHS[0]}.tmp')

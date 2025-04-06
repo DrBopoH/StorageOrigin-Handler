@@ -28,10 +28,10 @@ run_vtests:
 	@cmd /c "$(VENV_ACTIVATE) & $(VENV_PYTHON) -m pytest -v"
 
 run_covtests:
-	@cmd /c "$(VENV_ACTIVATE) & $(VENV_PYTHON) -m pytest --cov=main --cov-report=html"
+	@cmd /c "$(VENV_ACTIVATE) & $(VENV_PYTHON) -m pytest --cov=. --cov-report=html"
 
 run_vcovtests:
-	@cmd /c "$(VENV_ACTIVATE) & $(VENV_PYTHON) -m pytest -v --cov=main --cov-report=html"
+	@cmd /c "$(VENV_ACTIVATE) & $(VENV_PYTHON) -m pytest -v --cov=. --cov-report=html"
 
 
 

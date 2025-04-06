@@ -14,4 +14,4 @@ jobs:
       - name: Install dependencies
         run: pip install -r scr/requirements.txt
       - name: Run pytest
-        run: pytest -v --cov=src
+        run: pytest -v

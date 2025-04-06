@@ -15,9 +15,9 @@ UNEXISTS_FILEPATHS: Tuple[str, ...] = (
 )
 
 UNVALID_FILEPATHS: Tuple[tuple[str, Type[Exception], str], ...] = (
-	('tests/' + 'very'*100 + 'longfile.txt', OSError, "[Errno 22] Invalid argument: '" + "tests/" + 'very'*100 + "longfile.txt'"),
+	(f'tests/{'very'*2000}longfile.txt', OSError, f"[Errno 22] Invalid argument: 'tests/{'very'*2000}longfile.txt'"),
 	('nonexistent_directory/file.txt', FileNotFoundError, "[Errno 2] No such file or directory: 'nonexistent_directory/file.txt'"),
-	('tests/test_unv*lid.json', OSError, "[Errno 22] Invalid argument: 'tests/test_unv*lid.json'"),
+	('tests/test_unv<lid.json', OSError, "[Errno 22] Invalid argument: 'tests/test_unv<lid.json'"),
 	('', OSError, "[Errno 2] No such file or directory: ''")
 )
 

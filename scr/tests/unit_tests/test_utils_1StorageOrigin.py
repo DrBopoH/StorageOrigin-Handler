@@ -1,8 +1,8 @@
 from typing import Type
 import pytest, os, re
 
-from scr.tests.conftest import DELETED_FILEPATHS, EXISTS_FILEPATHS, UNEXISTS_FILEPATHS, UNVALID_FILEPATHS
-from scr.StorageOrigin import StorageOrigin
+from tests.conftest import DELETED_FILEPATHS, EXISTS_FILEPATHS, UNEXISTS_FILEPATHS, UNVALID_FILEPATHS
+from main import StorageOrigin
 
 
 

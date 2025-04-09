@@ -13,12 +13,9 @@ PIP = $(VENV_PYTHON) -m pip
 mount_venv:
 	if not exist $(VENV_DIR) $(PYTHON) -m venv $(VENV_DIR)
 
-uptodate: mount_venv
+up_req: mount_venv
 	@cmd /c "$(VENV_ACTIVATE) & $(PIP) install -r requirements.txt"
 
-
-#run_app:
-#	@cmd /c "$(VENV_ACTIVATE) & $(VENV_PYTHON) main/main.py"
 
 
 run_tests:
@@ -35,9 +32,4 @@ run_vcovtests:
 
 
 
-clean_cache:
-	del /s /q __pycache__ .pytest_cache htmlcov .coverage 2>nul || exit 0
-
-
-
-.PHONY: mount_venv uptodate run_tests run_vtests run_covtests run_vcovtests clean_cache
+.PHONY: mount_venv up_req run_tests run_vtests run_covtests run_vcovtests

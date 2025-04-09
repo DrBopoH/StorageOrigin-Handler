@@ -1,7 +1,7 @@
 import pytest
 
-from scr.tests.conftest import EXISTS_FILEPATHS
-from scr.StorageOrigin import NoteOrigin
+from tests.conftest import EXISTS_FILEPATHS
+from main import NoteOrigin
 
 
 @pytest.mark.parametrize("filePath, text", [

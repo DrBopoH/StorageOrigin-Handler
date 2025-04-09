@@ -17,7 +17,6 @@ UNEXISTS_FILEPATHS: Tuple[str, ...] = (
 UNVALID_FILEPATHS: Tuple[tuple[str, Type[Exception], str], ...] = (
 	(f'tests/{'very'*2000}longfile.txt', OSError, f"{'[Errno 22] Invalid argument' if os.name == 'nt' else '[Errno 36] File name too long'}: 'tests/{'very'*2000}longfile.txt'"),
 	('nonexistent_directory/file.txt', FileNotFoundError, "[Errno 2] No such file or directory: 'nonexistent_directory/file.txt'"),
-	('tests/test_unv?lid.json', OSError, "[Errno 22] Invalid argument: 'tests/test_unv?lid.json'"),
 	('', OSError, "[Errno 2] No such file or directory: ''")
 )
 

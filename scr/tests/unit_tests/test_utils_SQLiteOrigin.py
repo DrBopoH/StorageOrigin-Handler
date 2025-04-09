@@ -1,8 +1,8 @@
 from typing import Tuple
 import pytest, os
 
-from scr.tests.conftest import SQL_TEMPLATES, UNEXISTS_FILEPATHS
-from scr.StorageOrigin import SQLiteOrigin
+from tests.conftest import SQL_TEMPLATES, UNEXISTS_FILEPATHS
+from main import SQLiteOrigin
 
 
 

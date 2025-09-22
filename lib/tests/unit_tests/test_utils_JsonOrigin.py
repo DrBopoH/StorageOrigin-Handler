@@ -1,8 +1,8 @@
 from typing import Type, Dict 
 import pytest, json, os, re
 
-from scr.tests.conftest import EXISTS_FILEPATHS, JSON_EXAMPLES
-from scr.main import JsonOrigin
+from lib.tests.conftest import EXISTS_FILEPATHS, JSON_EXAMPLES
+from lib.Origins import JsonOrigin
 
 
 

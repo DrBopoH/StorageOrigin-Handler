@@ -10,8 +10,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.12.7'
+          python-version: '3.12.11'
       - name: Install dependencies
-        run: pip install -r scr/requirements.txt
+        run: uv sync
       - name: Run pytest
         run: pytest -v
